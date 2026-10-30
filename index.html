@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPI Pendidikan Pancasila Kelas VII - Introducing Yourself</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Font: Poppins & Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tone.js for Sound Effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandRed: '#EF4444',
+            brandBlue: '#3B82F6',
+            brandYellow: '#F59E0B',
+            brandWhite: '#FFFFFF',
+            brandDark: '#1F2937',
+            brandGreen: '#10B981',
+          },
+          fontFamily: {
+            sans: ['Poppins', 'Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 50%, #ffe4e6 100%);
+      min-height: 100vh;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-bounce:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+    
+    .btn-bounce:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3B82F6;
+      border-radius: 10px;
+    }
+
+    /* Star burst animation for correct answers */
+    @keyframes popStar {
+      0% { transform: scale(0) rotate(0deg); opacity: 0; }
+      50% { transform: scale(1.3) rotate(180deg); opacity: 1; }
+      100% { transform: scale(1) rotate(360deg); opacity: 0; }
+    }
+    
+    .animate-pop-star {
+      animation: popStar 0.8s ease-out forwards;
+    }
+
+    /* Certificate Styling */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #certificate-modal, #certificate-modal * {
+        visibility: visible;
+      }
+      #certificate-modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen justify-between relative overflow-x-hidden">
+
+  <!-- Header / Top Navigation -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-md border-b-4 border-brandRed transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('welcome')">
+        <div class="w-10 h-10 rounded-full bg-brandRed flex items-center justify-center text-white font-bold text-xl shadow-md border-2 border-white">
+          <i class="fas fa-flag"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-slate-800 leading-tight">Pendidikan Pancasila</h1>
+          <p class="text-xs text-slate-500 font-semibold">Fase D / Kelas VII SMP</p>
+        </div>
+      </div>
+
+      <!-- User Greeting & Audio Toggle -->
+      <div class="flex items-center space-x-3">
+        <div id="user-display" class="hidden sm:flex items-center space-x-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200">
+          <i class="fas fa-user-circle text-brandBlue text-lg"></i>
+          <span id="header-user-name" class="text-xs font-bold text-brandBlue">Siswa</span>
+        </div>
+
+        <!-- Sound Toggle -->
+        <button id="sound-toggle" onclick="toggleAudio()" class="w-10 h-10 rounded-full bg-yellow-100 hover:bg-yellow-200 text-yellow-700 flex items-center justify-center transition shadow-sm" title="Toggle Sound">
+          <i class="fas fa-volume-up text-lg" id="sound-icon"></i>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button onclick="toggleMobileMenu()" class="lg:hidden w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-700">
+          <i class="fas fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Overall Progress Bar -->
+    <div class="w-full bg-slate-200 h-2">
+      <div id="global-progress" class="bg-gradient-to-r from-red-500 via-yellow-400 to-green-500 h-2 w-0 transition-all duration-500"></div>
+    </div>
+  </header>
+
+  <!-- Navigation Drawer for Desktop & Mobile Sidebar -->
+  <nav id="main-nav" class="hidden lg:block bg-white border-b border-slate-200 shadow-sm sticky top-[62px] z-30 transition-all">
+    <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap gap-1 justify-center text-xs font-semibold">
+      <button onclick="navigateTo('welcome')" class="nav-btn px-3 py-2 rounded-lg hover:bg-red-50 hover:text-brandRed transition flex items-center gap-1.5" data-page="welcome"><i class="fas fa-home"></i> Beranda</button>
+      <button onclick="navigateTo('instructions')" class="nav-btn px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-brandBlue transition flex items-center gap-1.5" data-page="instructions"><i class="fas fa-info-circle"></i> Petunjuk</button>
+      <button onclick="navigateTo('objectives')" class="nav-btn px-3 py-2 rounded-lg hover:bg-yellow-50 hover:text-yellow-600 transition flex items-center gap-1.5" data-page="objectives"><i class="fas fa-bullseye"></i> Tujuan</button>
+      <button onclick="navigateTo('aperception')" class="nav-btn px-3 py-2 rounded-lg hover:bg-purple-50 hover:text-purple-600 transition flex items-center gap-1.5" data-page="aperception"><i class="fas fa-lightbulb"></i> Apersepsi</button>
+      <button onclick="navigateTo('material')" class="nav-btn px-3 py-2 rounded-lg hover:bg-green-50 hover:text-brandGreen transition flex items-center gap-1.5" data-page="material"><i class="fas fa-book-open"></i> Materi</button>
+      <button onclick="navigateTo('video')" class="nav-btn px-3 py-2 rounded-lg hover:bg-red-50 hover:text-brandRed transition flex items-center gap-1.5" data-page="video"><i class="fab fa-youtube"></i> Video</button>
+      <button onclick="navigateTo('activities')" class="nav-btn px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-brandBlue transition flex items-center gap-1.5" data-page="activities"><i class="fas fa-gamepad"></i> Aktivitas</button>
+      <button onclick="navigateTo('practice')" class="nav-btn px-3 py-2 rounded-lg hover:bg-orange-50 hover:text-orange-600 transition flex items-center gap-1.5" data-page="practice"><i class="fas fa-id-card"></i> Praktik</button>
+      <button onclick="navigateTo('quiz')" class="nav-btn px-3 py-2 rounded-lg hover:bg-red-50 hover:text-brandRed transition flex items-center gap-1.5" data-page="quiz"><i class="fas fa-pen-alt"></i> Kuis</button>
+      <button onclick="navigateTo('reflection')" class="nav-btn px-3 py-2 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition flex items-center gap-1.5" data-page="reflection"><i class="fas fa-brain"></i> Refleksi</button>
+      <button onclick="navigateTo('closing')" class="nav-btn px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-600 transition flex items-center gap-1.5" data-page="closing"><i class="fas fa-award"></i> Penutup</button>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer Overlay -->
+  <div id="mobile-menu" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden transition-opacity">
+    <div class="bg-white w-4/5 max-w-xs h-full p-6 flex flex-col justify-between shadow-2xl">
+      <div>
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+          <span class="font-bold text-lg text-slate-800">Menu Pembelajaran</span>
+          <button onclick="toggleMobileMenu()" class="text-slate-500 text-xl"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="flex flex-col space-y-2 text-sm font-semibold">
+          <button onclick="navigateTo('welcome'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-red-50 text-slate-700 flex items-center gap-3"><i class="fas fa-home text-brandRed"></i> Beranda</button>
+          <button onclick="navigateTo('instructions'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-blue-50 text-slate-700 flex items-center gap-3"><i class="fas fa-info-circle text-brandBlue"></i> Petunjuk</button>
+          <button onclick="navigateTo('objectives'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-yellow-50 text-slate-700 flex items-center gap-3"><i class="fas fa-bullseye text-brandYellow"></i> Tujuan</button>
+          <button onclick="navigateTo('aperception'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-purple-50 text-slate-700 flex items-center gap-3"><i class="fas fa-lightbulb text-purple-600"></i> Apersepsi</button>
+          <button onclick="navigateTo('material'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-green-50 text-slate-700 flex items-center gap-3"><i class="fas fa-book-open text-brandGreen"></i> Materi</button>
+          <button onclick="navigateTo('video'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-red-50 text-slate-700 flex items-center gap-3"><i class="fab fa-youtube text-red-600"></i> Video</button>
+          <button onclick="navigateTo('activities'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-blue-50 text-slate-700 flex items-center gap-3"><i class="fas fa-gamepad text-blue-600"></i> Aktivitas Interaktif</button>
+          <button onclick="navigateTo('practice'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-orange-50 text-slate-700 flex items-center gap-3"><i class="fas fa-id-card text-orange-500"></i> Praktik Perkenalan</button>
+          <button onclick="navigateTo('quiz'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-red-50 text-slate-700 flex items-center gap-3"><i class="fas fa-pen-alt text-brandRed"></i> Kuis Evaluasi</button>
+          <button onclick="navigateTo('reflection'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-teal-50 text-slate-700 flex items-center gap-3"><i class="fas fa-brain text-teal-600"></i> Refleksi</button>
+          <button onclick="navigateTo('closing'); toggleMobileMenu();" class="p-2.5 rounded-lg text-left hover:bg-amber-50 text-slate-700 flex items-center gap-3"><i class="fas fa-award text-amber-500"></i> Penutup & Sertifikat</button>
+        </div>
+      </div>
+      <div class="text-xs text-slate-400 text-center border-t pt-4">
+        MPI Pendidikan Pancasila &copy; Kelas VII
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+
+    <!-- STAR ANIMATION CONTAINER -->
+    <div id="star-burst-container" class="fixed inset-0 pointer-events-none z-50 flex items-center justify-center hidden">
+      <div class="text-yellow-400 text-8xl animate-pop-star">
+        <i class="fas fa-star"></i>
+      </div>
+    </div>
+
+    <!-- 1. WELCOME PAGE -->
+    <section id="page-welcome" class="page-content block">
+      <div class="glass-card rounded-3xl p-6 md:p-10 text-center max-w-4xl mx-auto border-t-8 border-brandRed transition-all">
+        <div class="inline-block bg-red-100 text-brandRed text-xs font-extrabold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider">
+          🇮🇩 Pendidikan Pancasila • Kelas VII / Fase D
+        </div>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-2 leading-tight">
+          LET'S INTRODUCE OURSELVES!
+        </h1>
+        <p class="text-slate-600 font-medium text-sm md:text-base mb-6">
+          Mengenal Diri, Menghargai Perbedaan, dan Membangun Persatuan
+        </p>
+
+        <!-- Dynamic Avatar Graphics -->
+        <div class="flex justify-center items-center space-x-2 my-6">
+          <div class="w-16 h-16 md:w-20 md:h-20 bg-blue-100 border-4 border-white rounded-full shadow-md flex items-center justify-center text-3xl">👦🏻</div>
+          <div class="w-20 h-20 md:w-24 md:h-24 bg-red-100 border-4 border-white rounded-full shadow-lg flex items-center justify-center text-4xl -mt-4">👧🏽</div>
+          <div class="w-16 h-16 md:w-20 md:h-20 bg-yellow-100 border-4 border-white rounded-full shadow-md flex items-center justify-center text-3xl">👦🏾</div>
+          <div class="w-16 h-16 md:w-20 md:h-20 bg-green-100 border-4 border-white rounded-full shadow-md flex items-center justify-center text-3xl">👧🏻</div>
+        </div>
+
+        <!-- Name Input Form -->
+        <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-inner border border-slate-200 mb-6">
+          <label for="student-name-input" class="block text-sm font-bold text-slate-700 mb-2">
+            Masukkan Nama Lengkapmu untuk Memulai:
+          </label>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="student-name-input" placeholder="Contoh: Andi Pratama" class="flex-grow px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-brandBlue focus:outline-none transition font-semibold text-slate-700">
+            <button onclick="saveStudentName()" class="bg-brandBlue hover:bg-blue-600 text-white font-bold px-6 py-3 rounded-xl transition btn-bounce shadow-md flex items-center justify-center gap-2">
+              <span>Simpan</span> <i class="fas fa-check-circle"></i>
+            </button>
+          </div>
+          <p id="welcome-greeting" class="text-emerald-600 font-bold text-sm mt-3 hidden"></p>
+        </div>
+
+        <button onclick="startLearning()" class="bg-gradient-to-r from-brandRed to-red-600 hover:from-red-600 hover:to-red-700 text-white font-extrabold text-lg px-8 py-4 rounded-2xl shadow-xl transition btn-bounce inline-flex items-center gap-3">
+          <span>MULAI BELAJAR</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. PETUNJUK PENGGUNAAN -->
+    <section id="page-instructions" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-brandBlue">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-blue-100 text-brandBlue flex items-center justify-center text-2xl font-bold">
+            <i class="fas fa-directions"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Petunjuk Penggunaan Media</h2>
+            <p class="text-xs text-slate-500">Ikuti langkah-langkah belajar ini untuk hasil terbaik!</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div class="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm hover:shadow-md transition">
+            <div class="w-8 h-8 rounded-full bg-red-100 text-brandRed font-bold flex items-center justify-center mb-3">1</div>
+            <h3 class="font-bold text-slate-800 mb-1">Mulai Belajar</h3>
+            <p class="text-xs text-slate-600">Isi nama lengkapmu pada halaman beranda untuk membuka identitas peserta didik.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm hover:shadow-md transition">
+            <div class="w-8 h-8 rounded-full bg-blue-100 text-brandBlue font-bold flex items-center justify-center mb-3">2</div>
+            <h3 class="font-bold text-slate-800 mb-1">Pelajari Materi Berurutan</h3>
+            <p class="text-xs text-slate-600">Pahami materi *Introducing Yourself* dan hubungannya dengan nilai-nilai Pancasila.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm hover:shadow-md transition">
+            <div class="w-8 h-8 rounded-full bg-yellow-100 text-brandYellow font-bold flex items-center justify-center mb-3">3</div>
+            <h3 class="font-bold text-slate-800 mb-1">Tonton Video</h3>
+            <p class="text-xs text-slate-600">Simak video edukasi bahasa Inggris & Pancasila, lalu jawab pertanyaan refleksi video.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm hover:shadow-md transition">
+            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 font-bold flex items-center justify-center mb-3">4</div>
+            <h3 class="font-bold text-slate-800 mb-1">Aktivitas Interaktif</h3>
+            <p class="text-xs text-slate-600">Mainkan game seru: *Matching Game*, *Arrange Words*, *Complete Sentence*, dan *Who Am I?*.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm hover:shadow-md transition">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 text-brandGreen font-bold flex items-center justify-center mb-3">5</div>
+            <h3 class="font-bold text-slate-800 mb-1">Praktik & Evaluasi</h3>
+            <p class="text-xs text-slate-600">Buat teks perkenalan otomatis, lalu kerjakan Kuis Evaluasi 10 Soal.</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-sm hover:shadow-md transition">
+            <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 font-bold flex items-center justify-center mb-3">6</div>
+            <h3 class="font-bold text-slate-800 mb-1">Refleksi & Sertifikat</h3>
+            <p class="text-xs text-slate-600">Dapatkan badge *Young Pancasila Learner* dan sertifikat digital prestasimu!</p>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+          <button onclick="navigateTo('welcome')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('objectives')" class="px-6 py-2.5 bg-brandBlue hover:bg-blue-600 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Tujuan <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. TUJUAN PEMBELAJARAN -->
+    <section id="page-objectives" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-brandYellow">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-yellow-100 text-brandYellow flex items-center justify-center text-2xl font-bold">
+            <i class="fas fa-bullseye"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Tujuan Pembelajaran</h2>
+            <p class="text-xs text-slate-500">Klik setiap kartu untuk melihat rincian kompetensi yang akan kamu kuasai!</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <!-- Card 1 -->
+          <div onclick="toggleCardDetail(1)" class="cursor-pointer bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-brandYellow shadow-sm hover:shadow-lg transition-all duration-300">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-red-100 text-brandRed flex items-center justify-center text-lg font-bold">1</div>
+                <h3 class="font-bold text-slate-800">Mengenali Identitas Diri</h3>
+              </div>
+              <i id="card-icon-1" class="fas fa-plus text-slate-400"></i>
+            </div>
+            <div id="card-desc-1" class="hidden mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 leading-relaxed">
+              Peserta didik mampu mengenali, memahami, dan menjelaskan identitas pribadinya (nama, asal daerah, hobi, karakter unik) secara jujur dan percaya diri.
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div onclick="toggleCardDetail(2)" class="cursor-pointer bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-brandYellow shadow-sm hover:shadow-lg transition-all duration-300">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-brandBlue flex items-center justify-center text-lg font-bold">2</div>
+                <h3 class="font-bold text-slate-800">Perkenalan Percaya Diri</h3>
+              </div>
+              <i id="card-icon-2" class="fas fa-plus text-slate-400"></i>
+            </div>
+            <div id="card-desc-2" class="hidden mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 leading-relaxed">
+              Peserta didik mampu memperkenalkan diri menggunakan bahasa yang santun dan efektif baik dalam bahasa Indonesia maupun bahasa Inggris sederhana (*Introducing Yourself*).
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div onclick="toggleCardDetail(3)" class="cursor-pointer bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-brandYellow shadow-sm hover:shadow-lg transition-all duration-300">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-yellow-100 text-brandYellow flex items-center justify-center text-lg font-bold">3</div>
+                <h3 class="font-bold text-slate-800">Menghargai Keberagaman</h3>
+              </div>
+              <i id="card-icon-3" class="fas fa-plus text-slate-400"></i>
+            </div>
+            <div id="card-desc-3" class="hidden mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 leading-relaxed">
+              Peserta didik mampu menghargai perbedaan latar belakang, suku, agama, dan karakter teman sebagai kekayaan bangsa Indonesia.
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div onclick="toggleCardDetail(4)" class="cursor-pointer bg-white p-6 rounded-2xl border-2 border-slate-100 hover:border-brandYellow shadow-sm hover:shadow-lg transition-all duration-300">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-green-100 text-brandGreen flex items-center justify-center text-lg font-bold">4</div>
+                <h3 class="font-bold text-slate-800">Menerapkan Nilai Pancasila</h3>
+              </div>
+              <i id="card-icon-4" class="fas fa-plus text-slate-400"></i>
+            </div>
+            <div id="card-desc-4" class="hidden mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 leading-relaxed">
+              Peserta didik mampu menunjukkan sikap saling menghormati, gotong royong, dan toleransi sesuai dengan semboyan *Bhinneka Tunggal Ika*.
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+          <button onclick="navigateTo('instructions')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('aperception')" class="px-6 py-2.5 bg-brandYellow hover:bg-yellow-600 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Apersepsi <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. APERSEPSI -->
+    <section id="page-aperception" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-purple-500">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl font-bold">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Mari Berpikir Sejenak (Apersepsi)</h2>
+            <p class="text-xs text-slate-500">Jawab pertanyaan pemantik ini sebelum memulai materi utama!</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto">
+          <form id="aperception-form" onsubmit="handleAperceptionSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">1. Siapakah nama lengkapmu?</label>
+              <input type="text" id="ap-q1" required class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:border-purple-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">2. Apa hobi yang paling kamu sukai?</label>
+              <input type="text" id="ap-q2" placeholder="Contoh: Membaca, Bermain Sepak Bola" required class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:border-purple-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">3. Dari mana asal daerahmu?</label>
+              <input type="text" id="ap-q3" placeholder="Contoh: Jawa, Sumatra, Bali, Sulawesi" required class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:border-purple-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">4. Apa keunikan/kelebihan yang kamu miliki?</label>
+              <input type="text" id="ap-q4" placeholder="Contoh: Suka menolong, mudah tersenyum, ramah" required class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:border-purple-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">5. Mengapa kita harus menghargai perbedaan identitas setiap orang?</label>
+              <textarea id="ap-q5" rows="2" required placeholder="Tuliskan pendapatmu..." class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:border-purple-500 focus:outline-none"></textarea>
+            </div>
+            
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition btn-bounce">
+              Kirim Jawaban Pemantik <i class="fas fa-paper-plane ml-2"></i>
+            </button>
+          </form>
+
+          <!-- Feedback Box -->
+          <div id="aperception-feedback" class="hidden mt-6 bg-purple-50 border-2 border-purple-200 p-4 rounded-xl text-center animate-fade-in">
+            <div class="text-3xl mb-2">🌟👏</div>
+            <h4 class="font-bold text-purple-800 text-base mb-1">Luar Biasa! Jawabanmu Sangat Baik!</h4>
+            <p class="text-xs text-purple-700 leading-relaxed">
+              Setiap orang terlahir unik dan istimewa. Memahami keunikan diri dan menghargai perbedaan teman adalah wujud nyata penerapan nilai Pancasila!
+            </p>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-6 border-t border-slate-200 mt-6">
+          <button onclick="navigateTo('objectives')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('material')" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Materi <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. MATERI PEMBELAJARAN -->
+    <section id="page-material" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-brandGreen">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-green-100 text-brandGreen flex items-center justify-center text-2xl font-bold">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Materi: Introducing Yourself & Nilai Pancasila</h2>
+            <p class="text-xs text-slate-500">Pelajari ungkapan perkenalan diri dan korelasinya dengan persatuan bangsa.</p>
+          </div>
+        </div>
+
+        <!-- Sub-materi Vocabulary Tabs -->
+        <div class="mb-8">
+          <h3 class="font-bold text-slate-800 text-sm mb-3"><i class="fas fa-comments text-brandGreen mr-2"></i>Komponen Ungkapan Perkenalan (English Expressions)</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Item 1 -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brandGreen transition">
+              <span class="text-xs font-bold bg-green-100 text-brandGreen px-2.5 py-1 rounded-full">1. Greeting (Salam)</span>
+              <p class="font-semibold text-slate-800 text-sm mt-2">"Hello", "Hi", "Good Morning"</p>
+              <p class="text-xs text-slate-500 italic mt-1">Digunakan untuk menyapa kawan dengan ramah.</p>
+            </div>
+            <!-- Item 2 -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brandGreen transition">
+              <span class="text-xs font-bold bg-green-100 text-brandGreen px-2.5 py-1 rounded-full">2. Name (Nama)</span>
+              <p class="font-semibold text-slate-800 text-sm mt-2">"My name is..." / "I am..."</p>
+              <p class="text-xs text-slate-500 italic mt-1">Menyebutkan nama diri secara jelas.</p>
+            </div>
+            <!-- Item 3 -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brandGreen transition">
+              <span class="text-xs font-bold bg-green-100 text-brandGreen px-2.5 py-1 rounded-full">3. Age (Usia)</span>
+              <p class="font-semibold text-slate-800 text-sm mt-2">"I am thirteen years old."</p>
+              <p class="text-xs text-slate-500 italic mt-1">Menyebutkan usia/umur saat ini.</p>
+            </div>
+            <!-- Item 4 -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brandGreen transition">
+              <span class="text-xs font-bold bg-green-100 text-brandGreen px-2.5 py-1 rounded-full">4. Origin (Asal Daerah)</span>
+              <p class="font-semibold text-slate-800 text-sm mt-2">"I come from..." / "I am from..."</p>
+              <p class="text-xs text-slate-500 italic mt-1">Menjelaskan asal daerah/suku bangsa.</p>
+            </div>
+            <!-- Item 5 -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brandGreen transition">
+              <span class="text-xs font-bold bg-green-100 text-brandGreen px-2.5 py-1 rounded-full">5. Hobby & Character</span>
+              <p class="font-semibold text-slate-800 text-sm mt-2">"My hobby is..." / "I am friendly."</p>
+              <p class="text-xs text-slate-500 italic mt-1">Menyampaikan kesukaan dan sifat baik.</p>
+            </div>
+            <!-- Item 6 -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brandGreen transition">
+              <span class="text-xs font-bold bg-green-100 text-brandGreen px-2.5 py-1 rounded-full">6. Closing (Penutup)</span>
+              <p class="font-semibold text-slate-800 text-sm mt-2">"Nice to meet you!"</p>
+              <p class="text-xs text-slate-500 italic mt-1">Ungkapan senang bisa berkenalan.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dialogue Example -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
+          <h3 class="font-bold text-slate-800 text-sm mb-4 flex items-center gap-2">
+            <i class="fas fa-comments text-brandBlue"></i> Contoh Percakapan Interaktif (Dialogue)
+          </h3>
+          <div class="space-y-3 text-xs md:text-sm">
+            <div class="flex items-start gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
+              <span class="font-bold text-brandBlue w-8">A:</span>
+              <p class="text-slate-700">"Hello, what is your name?"</p>
+            </div>
+            <div class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100">
+              <span class="font-bold text-brandRed w-8">B:</span>
+              <p class="text-slate-700">"Hi, my name is Andi. I come from Indonesia."</p>
+            </div>
+            <div class="flex items-start gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
+              <span class="font-bold text-brandBlue w-8">A:</span>
+              <p class="text-slate-700">"What is your hobby, Andi?"</p>
+            </div>
+            <div class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100">
+              <span class="font-bold text-brandRed w-8">B:</span>
+              <p class="text-slate-700">"My hobby is reading. Nice to meet you!"</p>
+            </div>
+            <div class="flex items-start gap-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
+              <span class="font-bold text-brandBlue w-8">A:</span>
+              <p class="text-slate-700">"Nice to meet you too!"</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hubungan dengan Nilai Pancasila -->
+        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-md">
+          <h3 class="font-extrabold text-base mb-3 flex items-center gap-2">
+            <i class="fas fa-heart"></i> MENGHUBUNGKAN PERKENALAN DIRI DENGAN PANCASILA
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs leading-relaxed">
+            <div class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20">
+              <strong class="block text-yellow-300 font-bold mb-1">1. Menghargai Keberagaman</strong>
+              Indonesia terdiri dari beragam suku dan daerah. Memperkenalkan asal-usul mengajarkan kita untuk bangga dan saling menghormati keberagaman.
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20">
+              <strong class="block text-yellow-300 font-bold mb-1">2. Membangun Persahabatan</strong>
+              Saling menyapa dan memperkenalkan diri melatih sikap ramah, gotong royong, dan rasa kekeluargaan antar sesama siswa.
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20">
+              <strong class="block text-yellow-300 font-bold mb-1">3. Persatuan Indonesia</strong>
+              Dengan saling mengenal tanpa membeda-bedakan, kita menjaga keutuhan Negara Kesatuan Republik Indonesia (NKRI).
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-6 border-t border-slate-200 mt-6">
+          <button onclick="navigateTo('aperception')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('video')" class="px-6 py-2.5 bg-brandGreen hover:bg-emerald-600 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Video <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. MENU VIDEO PEMBELAJARAN -->
+    <section id="page-video" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-red-500">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-2xl font-bold">
+            <i class="fab fa-youtube"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Watch and Learn: How to Introduce Yourself</h2>
+            <p class="text-xs text-slate-500">Simak video berikut dengan cermat untuk memahami pengucapan dan sikap perkenalan!</p>
+          </div>
+        </div>
+
+        <!-- Video Iframe Container -->
+        <div class="relative w-full overflow-hidden rounded-2xl shadow-xl bg-black mb-6" style="padding-top: 56.25%;">
+          <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/8zhrZlFS5Yw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+
+        <!-- Video Reflection & Confirmation -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 mb-6">
+          <h3 class="font-bold text-slate-800 text-sm mb-3"><i class="fas fa-pen-nib text-brandRed mr-2"></i>Pertanyaan Refleksi Video:</h3>
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">1. Ungkapan salam apa yang kamu dengar dalam video?</label>
+              <input type="text" id="vid-q1" placeholder="Tuliskan jawabanmu..." class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-red-500">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">2. Informasi apa saja yang biasa disebutkan saat memperkenalkan diri?</label>
+              <input type="text" id="vid-q2" placeholder="Tuliskan jawabanmu..." class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-red-500">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">3. Mengapa kita harus bersikap sopan dan ramah saat berkenalan?</label>
+              <input type="text" id="vid-q3" placeholder="Tuliskan jawabanmu..." class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-red-500">
+            </div>
+          </div>
+
+          <div class="mt-5 text-center">
+            <button id="btn-video-done" onclick="markVideoWatched()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-3 rounded-xl transition btn-bounce shadow-md inline-flex items-center gap-2">
+              <i class="fas fa-check-circle"></i> <span>Saya Sudah Menonton Video</span>
+            </button>
+            <p id="video-watched-msg" class="text-xs font-bold text-emerald-600 mt-2 hidden">✓ Terima kasih! Perkembangan belajar diperbarui.</p>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+          <button onclick="navigateTo('material')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('activities')" class="px-6 py-2.5 bg-brandRed hover:bg-red-600 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Aktivitas <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. AKTIVITAS INTERAKTIF (GAMES) -->
+    <section id="page-activities" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-brandBlue">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-blue-100 text-brandBlue flex items-center justify-center text-2xl font-bold">
+            <i class="fas fa-gamepad"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Aktivitas & Permainan Edukatif</h2>
+            <p class="text-xs text-slate-500">Uji pemahamanmu secara interaktif dan kumpulkan poin!</p>
+          </div>
+        </div>
+
+        <!-- Activity Sub-Tabs -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-200 pb-3">
+          <button onclick="switchActivityTab('matching')" id="tab-matching" class="act-tab-btn px-4 py-2 text-xs font-bold rounded-xl bg-brandBlue text-white">a. Matching Game</button>
+          <button onclick="switchActivityTab('arrange')" id="tab-arrange" class="act-tab-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">b. Arrange Words</button>
+          <button onclick="switchActivityTab('complete')" id="tab-complete" class="act-tab-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">c. Complete Sentence</button>
+          <button onclick="switchActivityTab('whoami')" id="tab-whoami" class="act-tab-btn px-4 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200">d. Who Am I?</button>
+        </div>
+
+        <!-- TAB A: MATCHING GAME -->
+        <div id="act-content-matching" class="act-sub-content block">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200">
+            <h3 class="font-bold text-slate-800 text-sm mb-2">Jodohkan Ungkapan Bahasa Inggris dengan Artinya!</h3>
+            <p class="text-xs text-slate-500 mb-4">Klik pasangan kata di sebelah kiri lalu klik artinya di sebelah kanan.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Left Column (English) -->
+              <div class="space-y-2" id="matching-left">
+                <button onclick="selectMatchLeft(this, 'Nice to meet you')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">Nice to meet you</button>
+                <button onclick="selectMatchLeft(this, 'I come from')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">I come from</button>
+                <button onclick="selectMatchLeft(this, 'My hobby is')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">My hobby is</button>
+                <button onclick="selectMatchLeft(this, 'Good morning')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">Good morning</button>
+              </div>
+
+              <!-- Right Column (Indonesian) -->
+              <div class="space-y-2" id="matching-right">
+                <button onclick="selectMatchRight(this, 'Selamat pagi')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">Selamat pagi</button>
+                <button onclick="selectMatchRight(this, 'Senang bertemu denganmu')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">Senang bertemu denganmu</button>
+                <button onclick="selectMatchRight(this, 'Saya berasal dari')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">Saya berasal dari</button>
+                <button onclick="selectMatchRight(this, 'Hobi saya adalah')" class="w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50">Hobi saya adalah</button>
+              </div>
+            </div>
+
+            <div id="matching-score" class="mt-4 text-xs font-bold text-slate-700">Skor Matching: <span id="match-score-val">0</span> / 40</div>
+            <button onclick="resetMatchingGame()" class="mt-3 text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg font-semibold"><i class="fas fa-redo"></i> Ulangi Game</button>
+          </div>
+        </div>
+
+        <!-- TAB B: ARRANGE THE WORDS -->
+        <div id="act-content-arrange" class="act-sub-content hidden">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200">
+            <h3 class="font-bold text-slate-800 text-sm mb-2">Susun Kata Acak Menjadi Kalimat Perkenalan!</h3>
+            <p class="text-xs text-slate-500 mb-4">Klik kata-kata di bawah sesuai urutan yang benar.</p>
+
+            <div class="bg-slate-50 p-4 rounded-xl border min-h-[60px] mb-4 flex flex-wrap gap-2" id="arrange-target">
+              <!-- Selected words will appear here -->
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-4" id="arrange-source">
+              <button onclick="pickArrangeWord('from')" class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-brandBlue font-bold text-xs rounded-xl">from</button>
+              <button onclick="pickArrangeWord('Indonesia')" class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-brandBlue font-bold text-xs rounded-xl">Indonesia</button>
+              <button onclick="pickArrangeWord('come')" class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-brandBlue font-bold text-xs rounded-xl">come</button>
+              <button onclick="pickArrangeWord('I')" class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-brandBlue font-bold text-xs rounded-xl">I</button>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <button onclick="checkArrangeSentence()" class="bg-brandGreen hover:bg-emerald-600 text-white font-bold px-4 py-2 text-xs rounded-xl transition">Cek Jawaban</button>
+              <button onclick="resetArrangeGame()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 text-xs rounded-xl transition">Reset</button>
+            </div>
+            <p id="arrange-feedback" class="text-xs font-bold mt-3"></p>
+          </div>
+        </div>
+
+        <!-- TAB C: COMPLETE THE SENTENCE -->
+        <div id="act-content-complete" class="act-sub-content hidden">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200">
+            <h3 class="font-bold text-slate-800 text-sm mb-2">Lengkapi Kalimat Perkenalan</h3>
+            <p class="text-xs text-slate-500 mb-4">Pilih kata yang tepat untuk melengkapi bagian yang kosong.</p>
+
+            <div class="space-y-4 text-xs font-semibold">
+              <div class="p-3 bg-slate-50 rounded-xl">
+                <p class="mb-2">1. Hello, my ______ is Siti.</p>
+                <div class="flex gap-2">
+                  <button onclick="checkComplete(1, 'name', this)" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-blue-50">name</button>
+                  <button onclick="checkComplete(1, 'hobby', this)" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-blue-50">hobby</button>
+                  <button onclick="checkComplete(1, 'from', this)" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-blue-50">from</button>
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-50 rounded-xl">
+                <p class="mb-2">2. Nice to ______ you!</p>
+                <div class="flex gap-2">
+                  <button onclick="checkComplete(2, 'meet', this)" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-blue-50">meet</button>
+                  <button onclick="checkComplete(2, 'see', this)" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-blue-50">see</button>
+                  <button onclick="checkComplete(2, 'come', this)" class="px-3 py-1.5 bg-white border rounded-lg hover:bg-blue-50">come</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB D: WHO AM I? -->
+        <div id="act-content-whoami" class="act-sub-content hidden">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 text-center">
+            <h3 class="font-bold text-slate-800 text-sm mb-2">Mini Profile Builder: Who Am I?</h3>
+            <p class="text-xs text-slate-500 mb-4">Pilih karakter yang paling mencerminkan dirimu!</p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto">
+              <button onclick="selectAvatarProfile('Friendly Student', '😊')" class="p-4 bg-yellow-50 hover:bg-yellow-100 rounded-2xl border border-yellow-200 flex flex-col items-center">
+                <span class="text-3xl mb-1">😊</span>
+                <span class="text-xs font-bold text-slate-700">Ramah & Baik</span>
+              </button>
+              <button onclick="selectAvatarProfile('Creative Thinker', '🎨')" class="p-4 bg-blue-50 hover:bg-blue-100 rounded-2xl border border-blue-200 flex flex-col items-center">
+                <span class="text-3xl mb-1">🎨</span>
+                <span class="text-xs font-bold text-slate-700">Kreatif</span>
+              </button>
+              <button onclick="selectAvatarProfile('Active Sporty', '⚽')" class="p-4 bg-green-50 hover:bg-green-100 rounded-2xl border border-green-200 flex flex-col items-center">
+                <span class="text-3xl mb-1">⚽</span>
+                <span class="text-xs font-bold text-slate-700">Gemar Olahraga</span>
+              </button>
+              <button onclick="selectAvatarProfile('Helpful Friend', '🤝')" class="p-4 bg-red-50 hover:bg-red-100 rounded-2xl border border-red-200 flex flex-col items-center">
+                <span class="text-3xl mb-1">🤝</span>
+                <span class="text-xs font-bold text-slate-700">Suka Menolong</span>
+              </button>
+            </div>
+            <div id="profile-choice-result" class="mt-4 text-xs font-bold text-brandBlue"></div>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-6 border-t border-slate-200 mt-6">
+          <button onclick="navigateTo('video')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('practice')" class="px-6 py-2.5 bg-brandBlue hover:bg-blue-600 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Praktik <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. PRAKTIK MEMPERKENALKAN DIRI -->
+    <section id="page-practice" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-orange-500">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl font-bold">
+            <i class="fas fa-id-card"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Lembar Kerja Praktik Memperkenalkan Diri</h2>
+            <p class="text-xs text-slate-500">Isi data dirimu dan hasilkan teks perkenalan otomatis!</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Input Form -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4">Form Data Diri</h3>
+            <form id="practice-form" onsubmit="generateIntroduction(event)" class="space-y-3 text-xs">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">My Name (Nama Saya):</label>
+                <input type="text" id="p-name" required placeholder="Contoh: Budi Santoso" class="w-full px-3 py-2 rounded-lg border focus:border-orange-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">My Age (Usia Saya):</label>
+                <input type="number" id="p-age" required placeholder="Contoh: 13" class="w-full px-3 py-2 rounded-lg border focus:border-orange-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">My Origin (Asal Daerah):</label>
+                <input type="text" id="p-origin" required placeholder="Contoh: Bandung, Jawa Barat" class="w-full px-3 py-2 rounded-lg border focus:border-orange-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">My Hobby (Hobi Saya):</label>
+                <input type="text" id="p-hobby" required placeholder="Contoh: playing football / reading books" class="w-full px-3 py-2 rounded-lg border focus:border-orange-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">My Character (Karakter Saya):</label>
+                <input type="text" id="p-character" required placeholder="Contoh: friendly and helpful" class="w-full px-3 py-2 rounded-lg border focus:border-orange-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">My Dream (Cita-cita Saya):</label>
+                <input type="text" id="p-dream" required placeholder="Contoh: Teacher / Doctor / Engineer" class="w-full px-3 py-2 rounded-lg border focus:border-orange-500 focus:outline-none">
+              </div>
+
+              <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition btn-bounce shadow-md">
+                Generate My Introduction ✨
+              </button>
+            </form>
+          </div>
+
+          <!-- Generated Card -->
+          <div class="bg-gradient-to-br from-amber-50 to-orange-100 p-6 rounded-2xl border-2 border-orange-200 flex flex-col justify-between shadow-inner">
+            <div>
+              <div class="flex items-center justify-between mb-4 border-b border-orange-200 pb-3">
+                <span class="font-extrabold text-orange-800 text-sm">CARD ID: STUDENT</span>
+                <i class="fas fa-certificate text-orange-500 text-xl"></i>
+              </div>
+              
+              <div id="generated-output" class="text-slate-700 text-xs md:text-sm leading-relaxed italic font-medium bg-white/80 p-4 rounded-xl border border-white">
+                "Hasil perkenalan dirimu akan muncul di sini setelah kamu menekan tombol 'Generate My Introduction'."
+              </div>
+            </div>
+
+            <!-- Pancasila Reminder -->
+            <div class="mt-6 bg-white p-3 rounded-xl border border-orange-200 text-xs text-orange-900 flex items-center gap-2">
+              <i class="fas fa-heart text-red-500 text-base"></i>
+              <span><strong>Pengingat Pancasila:</strong> Setiap orang unik dan berharga! Hormati keberagaman latar belakang temanmu.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-6 border-t border-slate-200 mt-6">
+          <button onclick="navigateTo('activities')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('quiz')" class="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Kuis <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. KUIS EVALUASI (10 SOAL) -->
+    <section id="page-quiz" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-brandRed">
+        <div class="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-2xl bg-red-100 text-brandRed flex items-center justify-center text-2xl font-bold">
+              <i class="fas fa-pen-alt"></i>
+            </div>
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-800">Kuis Evaluasi Pembelajaran</h2>
+              <p class="text-xs text-slate-500">Uji kemampuanmu dengan 10 soal pilihan ganda.</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span id="quiz-question-number" class="text-xs font-bold bg-red-100 text-brandRed px-3 py-1 rounded-full">Soal 1 / 10</span>
+          </div>
+        </div>
+
+        <!-- Quiz Interface Container -->
+        <div id="quiz-container" class="max-w-2xl mx-auto">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+            <h3 id="quiz-question-text" class="font-bold text-slate-800 text-sm md:text-base mb-4 leading-relaxed">
+              Loading Soal...
+            </h3>
+
+            <!-- Options -->
+            <div id="quiz-options-container" class="space-y-2.5 text-xs md:text-sm font-semibold">
+              <!-- Dynamically populated buttons -->
+            </div>
+          </div>
+
+          <!-- Question Feedback & Discussion -->
+          <div id="quiz-feedback-box" class="hidden bg-slate-100 p-4 rounded-xl border border-slate-200 text-xs mb-6">
+            <div id="quiz-feedback-title" class="font-bold text-sm mb-1"></div>
+            <p id="quiz-discussion-text" class="text-slate-600 leading-relaxed"></p>
+            <button onclick="nextQuizQuestion()" class="mt-3 bg-brandBlue hover:bg-blue-600 text-white font-bold px-4 py-2 rounded-lg transition btn-bounce">
+              Soal Selanjutnya <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Result Dashboard (Initially Hidden) -->
+        <div id="quiz-result-dashboard" class="hidden text-center max-w-xl mx-auto py-6">
+          <div class="w-24 h-24 bg-yellow-100 text-brandYellow text-5xl rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
+            🏆
+          </div>
+          <h3 class="text-2xl font-extrabold text-slate-800 mb-1">Hasil Kuis Evaluasi</h3>
+          <p class="text-xs text-slate-500 mb-4">Selamat! Kamu telah menyelesaikan seluruh soal evaluasi.</p>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6">
+            <div class="text-5xl font-black text-brandRed mb-2" id="quiz-final-score">0</div>
+            <div class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Nilai Akhir (Skala 0 - 100)</div>
+            <div id="quiz-predicate" class="inline-block px-4 py-1.5 rounded-full text-xs font-extrabold bg-blue-100 text-brandBlue">
+              Predikat: Sangat Baik
+            </div>
+          </div>
+
+          <div class="flex justify-center gap-3">
+            <button onclick="restartQuiz()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2.5 rounded-xl transition text-xs">
+              <i class="fas fa-redo mr-1"></i> Ulangi Kuis
+            </button>
+            <button onclick="navigateTo('reflection')" class="bg-brandRed hover:bg-red-600 text-white font-bold px-6 py-2.5 rounded-xl transition btn-bounce text-xs">
+              Lanjut ke Refleksi <i class="fas fa-chevron-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="quiz-footer-nav" class="flex justify-between items-center pt-6 border-t border-slate-200 mt-6">
+          <button onclick="navigateTo('practice')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition text-xs">Kembali</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. REFLEKSI -->
+    <section id="page-reflection" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-8 border-t-8 border-teal-500">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center text-2xl font-bold">
+            <i class="fas fa-brain"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800">Refleksi Diri</h2>
+            <p class="text-xs text-slate-500">Renungkan apa yang telah kamu pelajari selama aktivitas ini.</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-3xl mx-auto space-y-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">1. Apa hal baru yang paling berkesan yang kamu pelajari hari ini?</label>
+            <textarea id="ref-1" rows="2" class="w-full px-3 py-2 rounded-lg border focus:border-teal-500 focus:outline-none" placeholder="Tuliskan pengalamanmu..."></textarea>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">2. Menurutmu, apa keunikan utama yang ada pada dirimu?</label>
+            <input type="text" id="ref-2" class="w-full px-3 py-2 rounded-lg border focus:border-teal-500 focus:outline-none" placeholder="Tuliskan keunikanmu...">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">3. Bagaimana cara konkritmu dalam menghargai perbedaan teman di sekolah?</label>
+            <textarea id="ref-3" rows="2" class="w-full px-3 py-2 rounded-lg border focus:border-teal-500 focus:outline-none" placeholder="Contoh: Tidak mengejek teman, mau berteman dengan siapa saja..."></textarea>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">4. Mengapa memperkenalkan diri dengan baik dapat membantu membangun persahabatan?</label>
+            <textarea id="ref-4" rows="2" class="w-full px-3 py-2 rounded-lg border focus:border-teal-500 focus:outline-none" placeholder="Tuliskan alasanmu..."></textarea>
+          </div>
+
+          <button onclick="saveReflection()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl transition btn-bounce">
+            Simpan Refleksi Diri <i class="fas fa-save ml-2"></i>
+          </button>
+          <p id="ref-saved-msg" class="text-center font-bold text-teal-600 text-xs hidden">✓ Refleksi tersimpan dengan sukses!</p>
+        </div>
+
+        <div class="flex justify-between items-center pt-6 border-t border-slate-200 mt-6">
+          <button onclick="navigateTo('quiz')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Kembali</button>
+          <button onclick="navigateTo('closing')" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition btn-bounce">Lanjut ke Penutup <i class="fas fa-chevron-right ml-1"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. HALAMAN PENUTUP & SERTIFIKAT -->
+    <section id="page-closing" class="page-content hidden">
+      <div class="glass-card rounded-3xl p-6 md:p-10 border-t-8 border-amber-500 text-center max-w-3xl mx-auto">
+        <!-- Badge -->
+        <div class="w-24 h-24 bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-full flex items-center justify-center text-4xl shadow-xl mx-auto mb-4 border-4 border-white animate-bounce">
+          🏅
+        </div>
+
+        <span class="inline-block bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full mb-2">BADGE TERBUKA!</span>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 mb-2">YOUNG PANCASILA LEARNER</h2>
+
+        <p class="text-slate-600 text-xs md:text-sm max-w-xl mx-auto mb-6 leading-relaxed">
+          "Setiap orang memiliki identitas dan keunikan. Mari saling mengenal, menghargai perbedaan, dan menjaga persatuan sesuai nilai-nilai Pancasila."
+        </p>
+
+        <!-- Certificate Trigger Button -->
+        <div class="bg-amber-50 p-6 rounded-2xl border border-amber-200 mb-6">
+          <h3 class="font-bold text-amber-900 text-sm mb-2">Selamat atas Pembelajaranmu!</h3>
+          <p class="text-xs text-amber-700 mb-4">Kamu telah menyelesaikan seluruh modul *Introducing Yourself* Pendidikan Pancasila Kelas VII.</p>
+          
+          <button onclick="openCertificateModal()" class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-extrabold text-sm px-6 py-3 rounded-xl shadow-lg transition btn-bounce inline-flex items-center gap-2">
+            <i class="fas fa-award"></i> Lihat & Cetak Sertifikat Digital
+          </button>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-3 pt-4 border-t border-slate-200">
+          <button onclick="navigateTo('welcome')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition text-xs">
+            <i class="fas fa-home mr-1"></i> Kembali ke Beranda
+          </button>
+          <button onclick="restartFullCourse()" class="px-5 py-2.5 bg-brandRed hover:bg-red-600 text-white font-bold rounded-xl transition text-xs">
+            <i class="fas fa-redo mr-1"></i> Ulangi Pembelajaran
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CERTIFICATE MODAL -->
+  <div id="certificate-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border-8 border-yellow-400 relative text-center">
+      <button onclick="closeCertificateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl"><i class="fas fa-times"></i></button>
+
+      <div class="border-4 border-dashed border-yellow-300 p-6 rounded-2xl bg-gradient-to-b from-yellow-50/50 to-white">
+        <div class="text-3xl mb-1">🇮🇩</div>
+        <h2 class="text-2xl font-black text-slate-800 tracking-wider">SERTIFIKAT PENGHARGAAN</h2>
+        <p class="text-xs text-slate-500 font-semibold mb-4">MEDIA PEMBELAJARAN INTERAKSI PENDIDIKAN PANCASILA</p>
+
+        <p class="text-xs text-slate-600 italic">Diberikan secara bangga kepada:</p>
+        <h3 id="cert-student-name" class="text-2xl font-extrabold text-brandRed my-2 underline decoration-yellow-400">Siswa SMP</h3>
+
+        <p class="text-xs text-slate-700 max-w-md mx-auto leading-relaxed my-3">
+          Telah berhasil menyelesaikan seluruh modul pembelajaran interaktif materi <strong>"Introducing Yourself: Mengenal Diri, Menghargai Perbedaan, dan Membangun Persatuan"</strong> dengan Gelar Kehormatan:
+        </p>
+
+        <div class="inline-block bg-yellow-100 text-yellow-800 font-black text-sm px-4 py-1.5 rounded-full my-2 border border-yellow-300">
+          "YOUNG PANCASILA LEARNER"
+        </div>
+
+        <div class="flex justify-between items-end mt-6 pt-4 border-t border-slate-200 text-xs">
+          <div class="text-left">
+            <p class="text-slate-400">Nilai Evaluasi:</p>
+            <p class="font-extrabold text-brandRed text-base" id="cert-score">100 / 100</p>
+          </div>
+          <div class="text-right">
+            <p class="text-slate-400">Fase D / Kelas VII</p>
+            <p class="font-bold text-slate-700">Pendidikan Pancasila</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-center gap-3">
+        <button onclick="window.print()" class="bg-brandBlue hover:bg-blue-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition btn-bounce">
+          <i class="fas fa-print mr-1"></i> Cetak / Simpan PDF
+        </button>
+        <button onclick="closeCertificateModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white/80 backdrop-blur-md border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-500">
+    <p>Media Pembelajaran Interaktif Pendidikan Pancasila SMP Kelas VII &copy; Fase D</p>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* ================= SYSTEM STATE ================= */
+    let studentName = localStorage.getItem('pancasila_student_name') || '';
+    let watchedVideo = localStorage.getItem('pancasila_watched_video') === 'true';
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+    let audioEnabled = true;
+
+    // Progress tracking across pages
+    const pagesList = ['welcome', 'instructions', 'objectives', 'aperception', 'material', 'video', 'activities', 'practice', 'quiz', 'reflection', 'closing'];
+
+    // Quiz Questions Data (10 Soal Pilihan Ganda)
+    const quizQuestions = [
+      {
+        q: "1. Ungkapan yang tepat digunakan untuk menyapa teman saat pertama kali bertemu adalah...",
+        options: ["Good bye", "Hello, how are you?", "See you later", "Thank you"],
+        answer: 1,
+        discussion: "Ungkapan 'Hello, how are you?' digunakan sebagai salam (greeting) saat menyapa kawan."
+      },
+      {
+        q: "2. Bagaimana cara memperkenalkan nama lengkap dalam bahasa Inggris secara sopan?",
+        options: ["My name is Budi", "I name Budi", "Me Budi name", "Name is my Budi"],
+        answer: 0,
+        discussion: "Struktur standar dalam memperkenalkan nama adalah 'My name is [Nama]' atau 'I am [Nama]'."
+      },
+      {
+        q: "3. Kalimat 'I come from Central Java' memiliki arti...",
+        options: ["Saya mau pergi ke Jawa Tengah", "Saya berasal dari Jawa Tengah", "Saya tinggal di Jawa Tengah", "Saya menyukai Jawa Tengah"],
+        answer: 1,
+        discussion: "'I come from...' digunakan untuk menjelaskan daerah asal (Origin)."
+      },
+      {
+        q: "4. Apabila temanmu menyebutkan hobinya adalah 'reading books', maka hobinya adalah...",
+        options: ["Bermain bola", "Membaca buku", "Menyanyi", "Berenang"],
+        answer: 1,
+        discussion: "'Reading books' artinya adalah membaca buku."
+      },
+      {
+        q: "5. Ungkapan penutup yang ramah setelah selesai memperkenalkan diri adalah...",
+        options: ["Nice to meet you", "What is your name?", "Where do you live?", "I don't know"],
+        answer: 0,
+        discussion: "'Nice to meet you' (Senang bertemu denganmu) adalah ungkapan penutup salam perkenalan."
+      },
+      {
+        q: "6. Di kelas VII terdapat siswa dari berbagai suku bangsa di Indonesia. Sikap yang sesuai dengan nilai Pancasila adalah...",
+        options: ["Hanya mau berteman dengan suku yang sama", "Saling menghargai dan berteman tanpa membeda-bedakan", "Ejek asal-usul daerah teman", "Acuh tak acuh"],
+        answer: 1,
+        discussion: "Menghargai keberagaman sesuai dengan Sila ke-3 Pancasila dan semboyan Bhinneka Tunggal Ika."
+      },
+      {
+        q: "7. Mengapa memperkenalkan diri secara jujur dan percaya diri penting dalam persahabatan?",
+        options: ["Agar bisa menyombongkan diri", "Agar teman dapat mengenal dan saling memahami keunikan kita", "Agar terpilih menjadi ketua kelas", "Agar mendapat hadiah"],
+        answer: 1,
+        discussion: "Saling mengenal secara jujur membangun rasa percaya dan toleransi di antara sesama."
+      },
+      {
+        q: "8. Ungkapan 'I am a friendly and helpful person' menggambarkan aspek...",
+        options: ["Asal daerah (Origin)", "Usia (Age)", "Sifat/Karakter diri (Personal Characteristic)", "Hobi (Hobby)"],
+        answer: 2,
+        discussion: "'Friendly' (ramah) dan 'helpful' (suka menolong) adalah contoh gambaran karakter diri."
+      },
+      {
+        q: "9. Semboyan nasional yang menjadi pijakan dalam menghargai perbedaan identitas teman di sekolah adalah...",
+        options: ["Tut Wuri Handayani", "Bhinneka Tunggal Ika", "Pancasila Sakti", "Bersatu Kita Teguh"],
+        answer: 1,
+        discussion: "Bhinneka Tunggal Ika berarti Berbeda-beda tetapi tetap satu jua."
+      },
+      {
+        q: "10. Manfaat utama dari saling menyapa dan berkenalan di lingkungan sekolah baru adalah...",
+        options: ["Menciptakan persatuan dan suasana belajar yang rukun", "Menambah musuh", "Membuat kelas menjadi bising", "Menghabiskan waktu"],
+        answer: 0,
+        discussion: "Saling berkenalan mempererat tali silaturahmi dan menjaga kerukunan di sekolah."
+      }
+    ];
+
+    /* ================= INITIALIZATION ================= */
+    window.onload = function() {
+      if (studentName) {
+        document.getElementById('student-name-input').value = studentName;
+        updateGreetingDisplay();
+      }
+      updateGlobalProgress('welcome');
+    };
+
+    /* ================= AUDIO EFFECTS (Tone.js) ================= */
+    function playSound(type) {
+      if (!audioEnabled) return;
+      try {
+        const synth = new Tone.Synth().toDestination();
+        if (type === 'correct') {
+          synth.triggerAttackRelease("C5", "8n");
+          setTimeout(() => synth.triggerAttackRelease("E5", "8n"), 100);
+          setTimeout(() => synth.triggerAttackRelease("G5", "8n"), 200);
+        } else if (type === 'wrong') {
+          synth.triggerAttackRelease("G3", "8n");
+          setTimeout(() => synth.triggerAttackRelease("C3", "8n"), 150);
+        } else if (type === 'click') {
+          synth.triggerAttackRelease("C4", "16n");
+        }
+      } catch(e) {
+        // Fallback silently if audio context restricted
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById('sound-icon');
+      if (audioEnabled) {
+        icon.className = 'fas fa-volume-up text-lg';
+      } else {
+        icon.className = 'fas fa-volume-mute text-lg';
+      }
+    }
+
+    /* ================= NAVIGATION & PROGRESS ================= */
+    function navigateTo(pageId) {
+      playSound('click');
+      // Hide all pages
+      document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+      
+      // Show targeted page
+      const target = document.getElementById('page-' + pageId);
+      if (target) {
+        target.classList.remove('hidden');
+      }
+
+      // Update Active Navigation Button Styling
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.getAttribute('data-page') === pageId) {
+          btn.classList.add('bg-slate-200', 'font-extrabold', 'text-brandRed');
+        } else {
+          btn.classList.remove('bg-slate-200', 'font-extrabold', 'text-brandRed');
+        }
+      });
+
+      updateGlobalProgress(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Init Quiz if Quiz page selected
+      if (pageId === 'quiz' && currentQuizIndex === 0) {
+        loadQuizQuestion(0);
+      }
+    }
+
+    function updateGlobalProgress(currentPage) {
+      const index = pagesList.indexOf(currentPage);
+      const percentage = Math.round(((index + 1) / pagesList.length) * 100);
+      document.getElementById('global-progress').style.width = percentage + '%';
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    /* ================= 1. WELCOME PAGE FUNCTIONS ================= */
+    function saveStudentName() {
+      const input = document.getElementById('student-name-input').value.trim();
+      if (input !== '') {
+        studentName = input;
+        localStorage.setItem('pancasila_student_name', studentName);
+        updateGreetingDisplay();
+        triggerStarBurst();
+        playSound('correct');
+      }
+    }
+
+    function updateGreetingDisplay() {
+      const greeting = document.getElementById('welcome-greeting');
+      const headerUser = document.getElementById('header-user-name');
+      const userDisplay = document.getElementById('user-display');
+      
+      greeting.textContent = `Selamat Datang, ${studentName}! Siap Belajar?`;
+      greeting.classList.remove('hidden');
+      headerUser.textContent = studentName;
+      userDisplay.classList.remove('hidden');
+    }
+
+    function startLearning() {
+      if (!studentName) {
+        studentName = "Siswa VII";
+        localStorage.setItem('pancasila_student_name', studentName);
+        updateGreetingDisplay();
+      }
+      navigateTo('instructions');
+    }
+
+    /* ================= 3. OBJECTIVES CARD TOGGLE ================= */
+    function toggleCardDetail(id) {
+      playSound('click');
+      const desc = document.getElementById(`card-desc-${id}`);
+      const icon = document.getElementById(`card-icon-${id}`);
+      if (desc.classList.contains('hidden')) {
+        desc.classList.remove('hidden');
+        icon.className = "fas fa-minus text-brandYellow";
+      } else {
+        desc.classList.add('hidden');
+        icon.className = "fas fa-plus text-slate-400";
+      }
+    }
+
+    /* ================= 4. APERCEPTION FORM ================= */
+    function handleAperceptionSubmit(e) {
+      e.preventDefault();
+      playSound('correct');
+      triggerStarBurst();
+      document.getElementById('aperception-feedback').classList.remove('hidden');
+    }
+
+    /* ================= 6. VIDEO WATCHED FUNCTION ================= */
+    function markVideoWatched() {
+      watchedVideo = true;
+      localStorage.setItem('pancasila_watched_video', 'true');
+      playSound('correct');
+      triggerStarBurst();
+      const msg = document.getElementById('video-watched-msg');
+      msg.classList.remove('hidden');
+    }
+
+    /* ================= 7. ACTIVITIES (GAMES) LOGIC ================= */
+    function switchActivityTab(tabName) {
+      playSound('click');
+      document.querySelectorAll('.act-sub-content').forEach(c => c.classList.add('hidden'));
+      document.querySelectorAll('.act-tab-btn').forEach(b => {
+        b.classList.remove('bg-brandBlue', 'text-white');
+        b.classList.add('bg-slate-100', 'text-slate-600');
+      });
+
+      document.getElementById(`act-content-${tabName}`).classList.remove('hidden');
+      const btn = document.getElementById(`tab-${tabName}`);
+      btn.classList.add('bg-brandBlue', 'text-white');
+      btn.classList.remove('bg-slate-100', 'text-slate-600');
+    }
+
+    // Matching Game State
+    let selectedLeft = null;
+    let selectedLeftText = '';
+    let matchScore = 0;
+
+    const correctMatches = {
+      'Nice to meet you': 'Senang bertemu denganmu',
+      'I come from': 'Saya berasal dari',
+      'My hobby is': 'Hobi saya adalah',
+      'Good morning': 'Selamat pagi'
+    };
+
+    function selectMatchLeft(btn, text) {
+      playSound('click');
+      document.querySelectorAll('#matching-left button').forEach(b => b.classList.remove('border-brandBlue', 'bg-blue-100'));
+      btn.classList.add('border-brandBlue', 'bg-blue-100');
+      selectedLeft = btn;
+      selectedLeftText = text;
+    }
+
+    function selectMatchRight(btn, text) {
+      if (!selectedLeft) return;
+      playSound('click');
+
+      if (correctMatches[selectedLeftText] === text) {
+        playSound('correct');
+        triggerStarBurst();
+        selectedLeft.classList.add('bg-emerald-100', 'border-emerald-500', 'pointer-events-none');
+        btn.classList.add('bg-emerald-100', 'border-emerald-500', 'pointer-events-none');
+        matchScore += 10;
+        document.getElementById('match-score-val').textContent = matchScore;
+      } else {
+        playSound('wrong');
+        btn.classList.add('bg-red-100', 'border-red-400');
+        setTimeout(() => btn.classList.remove('bg-red-100', 'border-red-400'), 1000);
+      }
+      
+      selectedLeft.classList.remove('border-brandBlue', 'bg-blue-100');
+      selectedLeft = null;
+      selectedLeftText = '';
+    }
+
+    function resetMatchingGame() {
+      matchScore = 0;
+      document.getElementById('match-score-val').textContent = 0;
+      document.querySelectorAll('#matching-left button, #matching-right button').forEach(b => {
+        b.className = "w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-brandBlue text-xs font-semibold bg-slate-50";
+      });
+    }
+
+    // Arrange Words Game
+    let arrangeSentenceArr = [];
+    function pickArrangeWord(word) {
+      playSound('click');
+      arrangeSentenceArr.push(word);
+      updateArrangeTarget();
+    }
+
+    function updateArrangeTarget() {
+      const target = document.getElementById('arrange-target');
+      target.innerHTML = arrangeSentenceArr.map(w => `<span class="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold">${w}</span>`).join(' ');
+    }
+
+    function checkArrangeSentence() {
+      const text = arrangeSentenceArr.join(' ');
+      const fb = document.getElementById('arrange-feedback');
+      if (text === 'I come from Indonesia') {
+        playSound('correct');
+        triggerStarBurst();
+        fb.textContent = '✓ Benar Sekali! "I come from Indonesia"';
+        fb.className = 'text-xs font-bold mt-3 text-emerald-600';
+      } else {
+        playSound('wrong');
+        fb.textContent = '❌ Masih belum tepat. Coba susun kembali!';
+        fb.className = 'text-xs font-bold mt-3 text-red-500';
+      }
+    }
+
+    function resetArrangeGame() {
+      arrangeSentenceArr = [];
+      updateArrangeTarget();
+      document.getElementById('arrange-feedback').textContent = '';
+    }
+
+    // Complete Sentence
+    function checkComplete(num, word, btn) {
+      if ((num === 1 && word === 'name') || (num === 2 && word === 'meet')) {
+        playSound('correct');
+        triggerStarBurst();
+        btn.className = "px-3 py-1.5 bg-emerald-500 text-white font-bold rounded-lg text-xs";
+      } else {
+        playSound('wrong');
+        btn.className = "px-3 py-1.5 bg-red-500 text-white font-bold rounded-lg text-xs";
+      }
+    }
+
+    // Who Am I Profile
+    function selectAvatarProfile(title, emoji) {
+      playSound('correct');
+      triggerStarBurst();
+      document.getElementById('profile-choice-result').innerHTML = `
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+          Kamu memilih karakter: <strong>${emoji} ${title}</strong>! Karakter ini sangat mendukung persatuan kelas.
+        </div>
+      `;
+    }
+
+    /* ================= 8. PRACTICAL FORM & GENERATOR ================= */
+    function generateIntroduction(e) {
+      e.preventDefault();
+      playSound('correct');
+      triggerStarBurst();
+
+      const name = document.getElementById('p-name').value;
+      const age = document.getElementById('p-age').value;
+      const origin = document.getElementById('p-origin').value;
+      const hobby = document.getElementById('p-hobby').value;
+      const char = document.getElementById('p-character').value;
+      const dream = document.getElementById('p-dream').value;
+
+      const outputHtml = `
+        "Hello everyone! My name is <strong>${name}</strong>. 
+        I am <strong>${age}</strong> years old. 
+        I come from <strong>${origin}</strong>. 
+        My hobby is <strong>${hobby}</strong>. 
+        I am a <strong>${char}</strong> person and my dream is to be a <strong>${dream}</strong>. 
+        Nice to meet you all!"
+      `;
+
+      document.getElementById('generated-output').innerHTML = outputHtml;
+    }
+
+    /* ================= 9. KUIS EVALUASI LOGIC ================= */
+    function loadQuizQuestion(index) {
+      const qData = quizQuestions[index];
+      document.getElementById('quiz-question-number').textContent = `Soal ${index + 1} / ${quizQuestions.length}`;
+      document.getElementById('quiz-question-text').textContent = qData.q;
+
+      const optsContainer = document.getElementById('quiz-options-container');
+      optsContainer.innerHTML = '';
+
+      qData.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-slate-200 hover:border-brandRed hover:bg-red-50 transition flex items-center gap-3";
+        btn.innerHTML = `
+          <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center">${String.fromCharCode(65 + i)}</span>
+          <span>${opt}</span>
+        `;
+        btn.onclick = () => handleQuizAnswer(index, i, btn);
+        optsContainer.appendChild(btn);
+      });
+
+      document.getElementById('quiz-feedback-box').classList.add('hidden');
+    }
+
+    function handleQuizAnswer(qIndex, selectedOptIndex, btnElement) {
+      const qData = quizQuestions[qIndex];
+      const optsContainer = document.getElementById('quiz-options-container');
+      
+      // Disable all option buttons
+      optsContainer.querySelectorAll('button').forEach(b => b.classList.add('pointer-events-none'));
+
+      const feedbackBox = document.getElementById('quiz-feedback-box');
+      const feedbackTitle = document.getElementById('quiz-feedback-title');
+      const discussionText = document.getElementById('quiz-discussion-text');
+
+      if (selectedOptIndex === qData.answer) {
+        playSound('correct');
+        triggerStarBurst();
+        btnElement.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+        feedbackTitle.textContent = "✓ Jawaban Benar!";
+        feedbackTitle.className = "font-bold text-sm text-emerald-700 mb-1";
+        quizScore += 10;
+      } else {
+        playSound('wrong');
+        btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+        feedbackTitle.textContent = "❌ Jawaban Belum Tepat";
+        feedbackTitle.className = "font-bold text-sm text-red-600 mb-1";
+      }
+
+      discussionText.textContent = qData.discussion;
+      feedbackBox.classList.remove('hidden');
+    }
+
+    function nextQuizQuestion() {
+      currentQuizIndex++;
+      if (currentQuizIndex < quizQuestions.length) {
+        loadQuizQuestion(currentQuizIndex);
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function finishQuiz() {
+      document.getElementById('quiz-container').classList.add('hidden');
+      document.getElementById('quiz-result-dashboard').classList.remove('hidden');
+      document.getElementById('quiz-footer-nav').classList.add('hidden');
+
+      document.getElementById('quiz-final-score').textContent = quizScore;
+      
+      let predicate = "Baik";
+      if (quizScore >= 90) predicate = "Sangat Baik (A)";
+      else if (quizScore >= 70) predicate = "Baik (B)";
+      else predicate = "Cukup (C)";
+
+      document.getElementById('quiz-predicate').textContent = `Predikat: ${predicate}`;
+      localStorage.setItem('pancasila_quiz_score', quizScore);
+    }
+
+    function restartQuiz() {
+      currentQuizIndex = 0;
+      quizScore = 0;
+      document.getElementById('quiz-container').classList.remove('hidden');
+      document.getElementById('quiz-result-dashboard').classList.add('hidden');
+      document.getElementById('quiz-footer-nav').classList.remove('hidden');
+      loadQuizQuestion(0);
+    }
+
+    /* ================= 10. REFLEKSI ================= */
+    function saveReflection() {
+      playSound('correct');
+      triggerStarBurst();
+      document.getElementById('ref-saved-msg').classList.remove('hidden');
+    }
+
+    /* ================= 11. CERTIFICATE MODAL & RESTART ================= */
+    function openCertificateModal() {
+      playSound('click');
+      document.getElementById('cert-student-name').textContent = studentName || "Siswa SMP";
+      document.getElementById('cert-score').textContent = `${quizScore} / 100`;
+      document.getElementById('certificate-modal').classList.remove('hidden');
+    }
+
+    function closeCertificateModal() {
+      document.getElementById('certificate-modal').classList.add('hidden');
+    }
+
+    function restartFullCourse() {
+      localStorage.clear();
+      studentName = '';
+      quizScore = 0;
+      currentQuizIndex = 0;
+      window.location.reload();
+    }
+
+    /* ================= VISUAL EFFECTS ================= */
+    function triggerStarBurst() {
+      const container = document.getElementById('star-burst-container');
+      container.classList.remove('hidden');
+      setTimeout(() => {
+        container.classList.add('hidden');
+      }, 800);
+    }
+  </script>
+</body>
+</html>
